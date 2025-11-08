@@ -1,4 +1,4 @@
-# Image Recognition
+# Image Recognition (Self-Hosted Solution)
 
 A Python solution for optical character recognition (OCR) from images using the Qwen3-VL-2B-Instruct vision-language model from Hugging Face. This tool interprets images and extracts text (See example below). A 2B parameter model is used to reduce the amount of VRAM required for inference. In a production environment, a larger model is preferred. 
 
