@@ -1,52 +1,16 @@
-# Image Recognition (Self-Hosted Solution)
+# Image Recognition (OCR)
 
-A Python solution for optical character recognition (OCR) from images using the Qwen3-VL-2B-Instruct vision-language model from Hugging Face. This tool interprets images and extracts text (See example below). A 2B parameter model is used to reduce the amount of VRAM required for inference. In a production environment, a larger model is preferred. 
+This is a self-hosted solution for optical character recognition (OCR) from images using the open-source *Qwen3-VL-2B-Instruct* vision-language model from Hugging Face. This tool interprets images and extracts text (See example below). A 2B parameter model is used to reduce the amount of VRAM required for inference. In a production environment, a self-hosted solution ensures data privacy and a model with a larger parameter can be hosted on a cloud provider such as Google Cloud, AWS or Azure. 
 
-## Features
+## Example (Receipt Text Extraction)
 
-- **GPU-accelerated OCR**: Leverages CUDA for fast inference using the lightweight Qwen3-VL-2B-Instruct model
-- **Receipt text extraction**: Optimized prompts for extracting text from receipts and documents
-- **Automatic image preprocessing**: Resizes images to reduce VRAM usage while maintaining quality
-- **Simple API**: Easy-to-use interface for processing images and extracting text
-
-## Requirements
-
-- Python 3.11+
-- CUDA-compatible GPU (required for model inference)
-- PyTorch with CUDA support
-
-## Installation
-
-1. **Install PyTorch with CUDA support** (adjust CUDA version as needed for your system):
-   ```bash
-   pip install torch==2.5.1 torchvision==0.20.1 torchaudio==2.5.1 --index-url https://download.pytorch.org/whl/cu121
-   ```
-
-2. **Install project dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-## Usage
-
-1. Place your image file in the project directory (or update the `image_path` variable in `model.py`)
-
-2. Run the model:
-   ```bash
-   python model.py
-   ```
-
-3. The extracted text will be saved to `example.txt` and printed to the console.
-
-## Example
-
-### Input
-A restaurant receipt image (`sample.jpg`) (Intentionally picked a receipt with faded text to test the model's ability to handle low-quality images):
+Intentionally picked a receipt with faded text and sub-optimal angle to test the model's ability to handle low-quality images.
+A restaurant receipt image (`sample.jpg`) is used as an example:
 
 ![Restaurant Receipt](sample.jpg)
 
 ### Output
-The extracted text from the receipt:
+The *Qwen3-VL-2B-Instruct* model's extraction of text from the receipt:
 
 ```
 RUBY SOFT
@@ -89,6 +53,42 @@ HST776462277
 AMERICAN EXPRESS
 CARDS ACCEPTED HERE
 ```
+
+## Features
+
+- **GPU-accelerated OCR**: Leverages CUDA for fast inference using the lightweight Qwen3-VL-2B-Instruct model
+- **Receipt text extraction**: Optimized prompts for extracting text from receipts and documents
+- **Automatic image preprocessing**: Resizes images to reduce VRAM usage while maintaining quality
+- **Simple API**: Easy-to-use interface for processing images and extracting text
+
+## Requirements
+
+- Python 3.11+
+- CUDA-compatible GPU (required for model inference)
+- PyTorch with CUDA support
+
+## Installation
+
+1. **Install PyTorch with CUDA support** (adjust CUDA version as needed for your system):
+   ```bash
+   pip install torch==2.5.1 torchvision==0.20.1 torchaudio==2.5.1 --index-url https://download.pytorch.org/whl/cu121
+   ```
+
+2. **Install project dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+## Usage
+
+1. Place your image file in the project directory (or update the `image_path` variable in `model.py`)
+
+2. Run the model:
+   ```bash
+   python model.py
+   ```
+
+3. The extracted text will be saved to `example.txt` and printed to the console.
 
 ## Customization
 
