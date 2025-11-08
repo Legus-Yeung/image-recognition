@@ -70,7 +70,7 @@ CARDS ACCEPTED HERE
 
 ## Installation
 
-1. **Install PyTorch with CUDA support** (adjust CUDA version as needed for your system):
+1. **Install PyTorch with CUDA support** (adjust CUDA version as needed for your system, my local machine is on CUDA 12.1):
    ```bash
    pip install torch==2.5.1 torchvision==0.20.1 torchaudio==2.5.1 --index-url https://download.pytorch.org/whl/cu121
    ```
@@ -103,7 +103,7 @@ The `google_vision_util/` directory contains a small utility script for extracti
 
 ## Notes
 
-- **GPU Required**: This project requires a CUDA-compatible GPU. The model will not run on CPU-only systems.
+- **GPU Recommendated**: This project defaults to using GPU for inference but falls back to CPU if no GPU is available.
 - **VRAM Usage**: The default image resolution is limited to 1728px to reduce VRAM usage. If you have more VRAM available, you can increase or remove this limit.
 - **Model Size**: The Qwen3-VL-2B-Instruct model is relatively lightweight (~2B parameters) but still requires significant GPU memory.
 

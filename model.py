@@ -3,18 +3,17 @@ import torch
 from PIL import Image
 import time
 
-# Check PyTorch and CUDA compatibility at https://pytorch.org/get-started/previous-versions/
-if not torch.cuda.is_available():
-    raise RuntimeError("CUDA not available! Install GPU-enabled PyTorch.")
-
-device = torch.device("cuda")
-print(f"Using GPU: {torch.cuda.get_device_name(0)}")
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+if device.type == "cuda":
+    print(f"Using GPU: {torch.cuda.get_device_name(0)}")
+else:
+    print("Using CPU")
 
 start_time = time.time()
 print("Loading model...")
 model = Qwen3VLForConditionalGeneration.from_pretrained(
     "Qwen/Qwen3-VL-2B-Instruct",
-    dtype=torch.float16,
+    dtype=torch.float16,    # Change to torch.float32 if you have more VRAM available.
     device_map="auto"
 )
 model.to(device)
@@ -31,7 +30,7 @@ max_resolution = 1728
 image.thumbnail((max_resolution, max_resolution))
 print(f"Image size after resize: {image.size}")
 
-# This prompt is tailored for OCR purposes (e.g. receipts), for other purposes, you can change the prompt to "Describe the image in detail".
+# This prompt is tailored for OCR purposes (e.g. receipts), for general purposes, you can change the prompt to "Describe the image in detail".
 messages = [
     {
         "role": "user",
