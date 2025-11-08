@@ -1,6 +1,6 @@
 # Image Recognition (OCR)
 
-This is a **open-source solution** for **optical character recognition (OCR)** from images using the **[Qwen3-VL-2B-Instruct](https://huggingface.co/Qwen/Qwen3-VL-2B-Instruct)** vision-language model from Hugging Face. The model is used to interpret images and extract text (See example below).
+This is a **open-source, self-hosted solution** for **optical character recognition (OCR)** using the **[Qwen3-VL-2B-Instruct](https://huggingface.co/Qwen/Qwen3-VL-2B-Instruct)** vision-language model from Hugging Face. The model is used to interpret images and extract text (See example below).
 
 In a production environment, a self-hosted solution ensures data privacy and a model with a larger parameter can be hosted on a cloud provider such as **Google Cloud**, **AWS** or **Azure**. 
 
