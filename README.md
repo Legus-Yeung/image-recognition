@@ -1,8 +1,8 @@
 # Image Recognition (OCR)
 
-This is a **open-source, self-hosted solution** for **optical character recognition (OCR)** using the **[Qwen3-VL-2B-Instruct](https://huggingface.co/Qwen/Qwen3-VL-2B-Instruct)** vision-language model from Hugging Face. The model is used to interpret images and extract text (See example below).
+This is a **self-hosted solution** for **optical character recognition (OCR)** using the lightweight **open-source** [Qwen3-VL-2B-Instruct](https://huggingface.co/Qwen/Qwen3-VL-2B-Instruct) vision-language model from Hugging Face. The model is utilized to **interpret images** and **extract text** within the image. The use case can be further expanded by customizing the prompt to extract different information.
 
-In a production environment, a self-hosted solution ensures data privacy and a model with a larger parameter can be hosted on a cloud provider such as **Google Cloud**, **AWS** or **Azure**. 
+In a production environment, a self-hosted solution ensures **data privacy** and a model with a larger parameter can be hosted on a cloud service provider such as **Google Cloud**, **AWS** or **Azure**. 
 
 ## Example (Receipt Text Extraction)
 
@@ -12,8 +12,7 @@ A restaurant receipt image (`sample.jpg`) is used as an **example**:
 
 ![Restaurant Receipt](sample.jpg)
 
-### Output
-The **Qwen3-VL-2B-Instruct** model's extraction of text from the receipt:
+The **Qwen3-VL-2B-Instruct** model's interpretation and output:
 
 ```
 RUBY SOFT
@@ -62,7 +61,6 @@ CARDS ACCEPTED HERE
 - **GPU-accelerated OCR**: Leverages CUDA for fast inference using the lightweight Qwen3-VL-2B-Instruct model
 - **Receipt text extraction**: Optimized prompts for extracting text from receipts and documents
 - **Automatic image preprocessing**: Resizes images to reduce VRAM usage while maintaining quality
-- **Simple API**: Easy-to-use interface for processing images and extracting text
 
 ## Requirements
 
