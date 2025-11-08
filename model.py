@@ -1,10 +1,9 @@
 from transformers import Qwen3VLForConditionalGeneration, AutoProcessor
 import torch
 from PIL import Image
-import requests
-from io import BytesIO
 import time
 
+# Check PyTorch and CUDA compatibility at https://pytorch.org/get-started/previous-versions/
 if not torch.cuda.is_available():
     raise RuntimeError("CUDA not available! Install GPU-enabled PyTorch.")
 
@@ -24,14 +23,15 @@ processor = AutoProcessor.from_pretrained("Qwen/Qwen3-VL-2B-Instruct")
 print("Model loaded!")
 print(f"Model load time: {time.time() - start_time:.2f} seconds")
 
-image_path = "IMG_7244.JPG"
+image_path = "sample.jpg"
 image = Image.open(image_path).convert("RGB")
 
-# Resize to reduce VRAM usage
-max_resolution = 1536
+# Resize to reduce VRAM usage. This is due to local machine's VRAM's limitation. If you have more VRAM, you can comment this out.
+max_resolution = 1728
 image.thumbnail((max_resolution, max_resolution))
 print(f"Image size after resize: {image.size}")
 
+# This prompt is tailored for OCR purposes (e.g. receipts), for other purposes, you can change the prompt to "Describe the image in detail".
 messages = [
     {
         "role": "user",
@@ -68,8 +68,8 @@ output_text = processor.batch_decode(
 )
 
 output_text_str = "\n".join(output_text)
-with open("output_text.txt", "w", encoding="utf-8") as f:
+with open("example.txt", "w", encoding="utf-8") as f:
     f.write(output_text_str)
 
-print("Extracted text saved to output_text.txt")
+print("Extracted text saved to example.txt")
 print("\nExtracted text:\n", output_text_str)
