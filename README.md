@@ -1,16 +1,17 @@
 # Image Recognition (OCR)
 
-This is a self-hosted solution for optical character recognition (OCR) from images using the open-source *Qwen3-VL-2B-Instruct* vision-language model from Hugging Face. This tool interprets images and extracts text (See example below). A 2B parameter model is used to reduce the amount of VRAM required for inference. In a production environment, a self-hosted solution ensures data privacy and a model with a larger parameter can be hosted on a cloud provider such as Google Cloud, AWS or Azure. 
+This is a **self-hosted solution** for **optical character recognition (OCR)** from images using the open-source **Qwen3-VL-2B-Instruct** vision-language model from Hugging Face. This tool interprets images and extracts text (See example below). A 2B parameter model is used to reduce the amount of VRAM required for inference. In a production environment, a self-hosted solution ensures data privacy and a model with a larger parameter can be hosted on a cloud provider such as **Google Cloud**, **AWS** or **Azure**. 
 
 ## Example (Receipt Text Extraction)
 
-Intentionally picked a receipt with faded text and sub-optimal angle to test the model's ability to handle low-quality images.
-A restaurant receipt image (`sample.jpg`) is used as an example:
+Intentionally picked a receipt with **faded text** and **sub-optimal angle** to test the model's ability to handle **low-quality images**.
+
+A restaurant receipt image (`sample.jpg`) is used as an **example**:
 
 ![Restaurant Receipt](sample.jpg)
 
 ### Output
-The *Qwen3-VL-2B-Instruct* model's extraction of text from the receipt:
+The **Qwen3-VL-2B-Instruct** model's extraction of text from the receipt:
 
 ```
 RUBY SOFT
