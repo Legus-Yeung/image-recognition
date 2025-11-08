@@ -1,6 +1,6 @@
-# Image Recognition and Text Extraction
+# Image Recognition
 
-A Python-based application for optical character recognition (OCR) and text extraction from images using the Qwen3-VL-2B-Instruct vision-language model from Hugging Face. This project is particularly optimized for extracting text from receipts and other document images.
+A Python-based application for optical character recognition (OCR) from images using the Qwen3-VL-2B-Instruct vision-language model from Hugging Face.
 
 ## Features
 
@@ -38,7 +38,59 @@ A Python-based application for optical character recognition (OCR) and text extr
 
 3. The extracted text will be saved to `example.txt` and printed to the console.
 
-### Customization
+## Example
+
+### Input
+A restaurant receipt image (`sample.jpg`):
+
+![Restaurant Receipt](sample.jpg)
+
+### Output
+The extracted text from the receipt:
+
+```
+RUBY SOFT
+Located in the Garment District
+587 King St W
+Toronto, ON M5V 1V5
+Ruby Scho
+Table 30
+2025-07-15 4:51 p.m.
+Server: Monikha S
+Check #53
+Seat 3
+Ordered:
+1-HH Stella Draft
+$10.00
+1 Maguy Smash Burger
+$25.00
+Baby Gem Caesar
+$3.00
+1-HH Casamigos Blanco 1oz
+$11.00
+Subtotal
+$49.00
+Tax
+$6.37
+Total
+$55.37
+Suggested Tip:
+15%: (Tip $8.31 Total $63.68)
+25%: (Tip $13.84 Total $69.21)
+20%: (Tip $11.07 Total $66.44)
+18%: (Tip $9.97 Total $65.34)
+Tip percentages are based on the check
+price after taxes.
+Thank you!
+Happy Hour 7 days a week 3pm-7pm
+Brunch served Sat & Sun 10am-3pm
+Keep Portland weird
+HST776462277
+AMERICAN EXPRESS
+CARDS ACCEPTED HERE
+```
+
+## Customization
 
 - **Change the image**: Update the `image_path` variable on line 26 of `model.py`
 - **Modify the prompt**: Change the prompt on line 40 to extract different information (e.g., "Describe the image in detail" for general image description)
