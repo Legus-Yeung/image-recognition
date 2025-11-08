@@ -100,7 +100,7 @@ def extract_individual_text_blocks(json_file_path, output_file_path=None):
         return ""
 
 if __name__ == "__main__":
-    json_file = "vision_output.json"
+    json_file = "google_vision_output.json"
 
     print("Using full text annotation method (recommended)...")
     text = extract_text_from_vision_json(json_file, "extracted_receipt.txt")

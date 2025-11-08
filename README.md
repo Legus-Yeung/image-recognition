@@ -1,6 +1,6 @@
 # Image Recognition
 
-A Python-based application for optical character recognition (OCR) from images using the Qwen3-VL-2B-Instruct vision-language model from Hugging Face.
+A Python solution for optical character recognition (OCR) from images using the Qwen3-VL-2B-Instruct vision-language model from Hugging Face. This tool interprets images and extracts text (See example below). A 2B parameter model is used to reduce the amount of VRAM required for inference. In a production environment, a larger model is preferred. 
 
 ## Features
 
@@ -41,7 +41,7 @@ A Python-based application for optical character recognition (OCR) from images u
 ## Example
 
 ### Input
-A restaurant receipt image (`sample.jpg`):
+A restaurant receipt image (`sample.jpg`) (Intentionally picked a receipt with faded text to test the model's ability to handle low-quality images):
 
 ![Restaurant Receipt](sample.jpg)
 
@@ -93,25 +93,8 @@ CARDS ACCEPTED HERE
 ## Customization
 
 - **Change the image**: Update the `image_path` variable on line 26 of `model.py`
-- **Modify the prompt**: Change the prompt on line 40 to extract different information (e.g., "Describe the image in detail" for general image description)
-- **Adjust image resolution**: Modify `max_resolution` on line 30 to change the maximum image size (useful for managing VRAM usage)
-
-## How It Works
-
-The application uses the Qwen3-VL-2B-Instruct model, a lightweight vision-language model that can understand both images and text prompts. The model processes the input image and generates text based on the provided prompt. For OCR tasks, the prompt "Read all the text in this image" is used to extract all visible text.
-
-The model is loaded with:
-- `float16` precision for reduced memory usage
-- Automatic device mapping for optimal GPU utilization
-- Image resizing to manage VRAM constraints
-
-## Output
-
-The extracted text is saved to `example.txt` in UTF-8 encoding. The console output includes:
-- Model loading time
-- Image processing information
-- Inference time
-- Extracted text preview
+- **General Use-Case**: Change the prompt on line 40 to "Describe the image in detail" for general image description
+- **Adjust image resolution**: Modify `max_resolution` on line 30 to change the maximum image size (for managing VRAM usage)
 
 ## Google Vision Utility
 
