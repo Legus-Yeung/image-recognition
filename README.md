@@ -56,12 +56,6 @@ AMERICAN EXPRESS
 CARDS ACCEPTED HERE
 ```
 
-## Features
-
-- **GPU-accelerated OCR**: Leverages CUDA for fast inference using the lightweight Qwen3-VL-2B-Instruct model
-- **Receipt text extraction**: Optimized prompts for extracting text from receipts and documents
-- **Automatic image preprocessing**: Resizes images to reduce VRAM usage while maintaining quality
-
 ## Requirements
 
 - Python 3.11+
