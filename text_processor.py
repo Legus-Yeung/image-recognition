@@ -349,16 +349,40 @@ if __name__ == "__main__":
     import json
     
     if len(sys.argv) < 2:
-        print("Usage: python text_processor.py <extracted_text_file>")
+        print("Usage: python text_processor.py <extracted_text_file_or_directory>")
         sys.exit(1)
     
-    text_file = sys.argv[1]
-    with open(text_file, "r", encoding="utf-8") as f:
-        text = f.read()
+    input_path = Path(sys.argv[1])
     
     processor = TextProcessor()
-    result = processor.process_text(text, Path(text_file).stem)
     
-    print("\nProcessed result:")
-    print(json.dumps(result, indent=2))
+    if input_path.is_dir():
+        extracted_texts = {}
+        for text_file in sorted(input_path.glob("*.txt")):
+            with open(text_file, "r", encoding="utf-8") as f:
+                extracted_texts[text_file.stem] = f.read()
+        
+        if not extracted_texts:
+            print(f"No text files found in {input_path}")
+            sys.exit(1)
+        
+        print(f"Processing {len(extracted_texts)} text file(s) from {input_path}...\n")
+        results = processor.process_texts_batch(extracted_texts)
+        
+        print("\nAll processed results:")
+        print(json.dumps(results, indent=2))
+    else:
+        if not input_path.exists():
+            print(f"Error: File not found: {input_path}")
+            sys.exit(1)
+        
+        with open(input_path, "r", encoding="utf-8") as f:
+            text = f.read()
+        
+        result = processor.process_text(text, input_path.stem)
+        
+        print("\nProcessed result:")
+        print(json.dumps(result, indent=2))
+    
+    processor.cleanup()
 
