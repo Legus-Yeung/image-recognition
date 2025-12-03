@@ -1,106 +1,276 @@
-# Image Recognition (OCR)
+# Image Recognition - Receipt Processing System
 
-This is a **self-hosted solution** for **optical character recognition (OCR)** using the latest, lightweight **open-source** [Qwen3-VL-2B-Instruct](https://huggingface.co/Qwen/Qwen3-VL-2B-Instruct) vision-language model from Hugging Face. The model is utilized to **interpret images** and **extract text** within the image. The use case can be further expanded by customizing the prompt to extract different information.
+A Python-based system for extracting, processing, and organizing receipt information from images and PDFs using vision-language models.
 
-In a production environment, a self-hosted solution ensures **data privacy** and a model with a larger parameter can be hosted on a cloud service provider such as **Google Cloud**, **AWS** or **Azure**. 
+## Overview
 
-## Example (Receipt Text Extraction)
+This project provides a complete pipeline for processing receipt images and PDFs:
+1. **Extract text** from receipt images using a vision-language model (Qwen3-VL)
+2. **Process and categorize** the extracted text to identify dates, amounts, and purchase categories
+3. **Export structured data** to CSV format for easy analysis
 
-Intentionally picked a receipt with **faded text** and **sub-optimal angle** to test the model's ability to handle **low-quality images**.
+## Root-Level Scripts
 
-A restaurant receipt image (`sample.jpg`) is used as an **example**:
+### 1. `batch_receipt_processor.py`
 
-![Restaurant Receipt](sample.jpg)
+**Main orchestrator script** that coordinates the entire receipt processing workflow.
 
-The **Qwen3-VL-2B-Instruct** model's interpretation and output:
+**Purpose:**
+- Processes receipt images in batch from a directory
+- Orchestrates the three-step pipeline: extraction → processing → CSV export
+- Manages GPU memory efficiently by cleaning up models between steps
 
+**Usage:**
+```bash
+python batch_receipt_processor.py <image_directory> [options]
 ```
-RUBY SOFT
-Located in the Garment District
-587 King St W
-Toronto, ON M5V 1V5
-Ruby Scho
-Table 30
-2025-07-15 4:51 p.m.
-Server: Monikha S
-Check #53
-Seat 3
-Ordered:
-1-HH Stella Draft
-$10.00
-1 Maguy Smash Burger
-$25.00
-Baby Gem Caesar
-$3.00
-1-HH Casamigos Blanco 1oz
-$11.00
-Subtotal
-$49.00
-Tax
-$6.37
-Total
-$55.37
-Suggested Tip:
-15%: (Tip $8.31 Total $63.68)
-25%: (Tip $13.84 Total $69.21)
-20%: (Tip $11.07 Total $66.44)
-18%: (Tip $9.97 Total $65.34)
-Tip percentages are based on the check
-price after taxes.
-Thank you!
-Happy Hour 7 days a week 3pm-7pm
-Brunch served Sat & Sun 10am-3pm
-Keep Portland weird
-HST776462277
-AMERICAN EXPRESS
-CARDS ACCEPTED HERE
+
+**Key Features:**
+- Extracts text from all images in a directory
+- Processes extracted text to identify dates, amounts, and categories
+- Exports results to CSV file
+- Supports skipping steps (e.g., re-processing existing extracted texts)
+- Configurable image resolution and token limits
+
+**Options:**
+- `--output-csv`: Output CSV file path (default: `receipts.csv`)
+- `--extracted-texts-dir`: Directory to save extracted text files (default: `extracted_texts`)
+- `--skip-extraction`: Skip image extraction step (use existing extracted texts)
+- `--skip-processing`: Skip text processing step
+- `--max-resolution`: Maximum image resolution for resizing (default: 3024)
+- `--max-new-tokens`: Maximum number of tokens to generate (default: 1024)
+
+**Example:**
+```bash
+python batch_receipt_processor.py images/ --output-csv my_receipts.csv
 ```
+
+---
+
+### 2. `image_extractor.py`
+
+**Module for extracting text from receipt images** using the Qwen3-VL vision-language model.
+
+**Purpose:**
+- Extracts all text content from receipt images
+- Handles image preprocessing (resizing, format conversion)
+- Saves extracted text to individual files
+
+**Key Features:**
+- Uses Qwen3-VL-2B-Instruct model for text extraction
+- Supports GPU acceleration (CUDA) when available
+- Processes images in batch from a directory
+- Automatically resizes large images to optimize processing
+- Saves extracted text to `.txt` files
+
+**Usage as standalone script:**
+```bash
+python image_extractor.py <image_directory> [output_directory]
+```
+
+**Example:**
+```bash
+python image_extractor.py images/ extracted_texts/
+```
+
+**Class: `ImageExtractor`**
+- `extract_text_from_image(image_path)`: Extract text from a single image
+- `extract_text_from_directory(directory, output_dir)`: Process all images in a directory
+- `cleanup()`: Free GPU memory after processing
+
+---
+
+### 3. `pdf_extractor.py`
+
+**Module for extracting text from PDF files** where each page contains a receipt image.
+
+**Purpose:**
+- Converts PDF pages to images
+- Extracts text from each page using the image extractor
+- Handles multi-page PDF documents
+
+**Key Features:**
+- Converts PDF pages to images using `pdf2image`
+- Processes each page as a separate receipt
+- Supports configurable DPI for PDF conversion
+- Optionally keeps or cleans up intermediate image files
+- Integrates with `ImageExtractor` for text extraction
+
+**Usage as standalone script:**
+```bash
+python pdf_extractor.py <pdf_path> [options]
+```
+
+**Options:**
+- `-o, --output-dir`: Directory to save extracted text files (default: `extracted_texts`)
+- `-i, --image-dir`: Directory to save extracted images (default: temporary)
+- `--dpi`: DPI for PDF to image conversion (default: 300)
+- `--keep-images`: Keep extracted images after processing
+- `--max-resolution`: Maximum image resolution for model processing (default: 3024)
+- `--max-new-tokens`: Maximum number of tokens to generate (default: 1024)
+
+**Example:**
+```bash
+python pdf_extractor.py receipts.pdf -o extracted_texts/ --dpi 300
+```
+
+**Class: `PDFExtractor`**
+- `extract_images_from_pdf(pdf_path, output_dir, dpi)`: Convert PDF pages to images
+- `extract_text_from_pdf(pdf_path, output_dir, ...)`: Extract text from all PDF pages
+- `cleanup()`: Free GPU memory after processing
+
+---
+
+### 4. `text_processor.py`
+
+**Module for processing extracted receipt text** to extract structured information and categorize purchases.
+
+**Purpose:**
+- Extracts date, amount, and category from raw receipt text
+- Uses AI model to intelligently categorize purchases
+- Handles various date formats and currency symbols
+
+**Key Features:**
+- Extracts purchase date (converts to YYYY-MM-DD format)
+- Extracts payment amount with currency symbol
+- Categorizes purchases into: dining, entertainment, travel, utility, health
+- Uses keyword matching and AI model for accurate categorization
+- Processes multiple receipts in batch
+
+**Categories:**
+- **dining**: Restaurants, cafes, food delivery, bars, fast food, grocery stores
+- **entertainment**: Movies, concerts, sports events, games, streaming services, bouldering/climbing gyms, arcades, bowling
+- **travel**: Hotels, airlines, trains, buses, car rentals, parking, taxis/rideshares
+- **utility**: Electricity, water, gas, internet, phone, cable, rent, property taxes
+- **health**: Pharmacies, hospitals, clinics, doctors, dentists, medical supplies, fitness centers
+
+**Usage as standalone script:**
+```bash
+python text_processor.py <extracted_text_file_or_directory>
+```
+
+**Example:**
+```bash
+python text_processor.py extracted_texts/
+```
+
+**Class: `TextProcessor`**
+- `process_text(text, image_filename)`: Process a single receipt text
+- `process_texts_batch(extracted_texts)`: Process multiple receipts
+- `extract_all_info(text)`: Extract date, amount, and category in one call
+- `cleanup()`: Free GPU memory after processing
+
+---
+
+### 5. `csv_exporter.py`
+
+**Module for exporting receipt data to CSV format** with intelligent sorting.
+
+**Purpose:**
+- Exports processed receipt data to CSV files
+- Sorts receipts by category and date
+- Provides clean, structured output for analysis
+
+**Key Features:**
+- Sorts data by category priority, then by date
+- Includes optional image filename column
+- Handles missing or incomplete data gracefully
+- Can export directly from extracted text directory
+
+**Usage as standalone script:**
+```bash
+python csv_exporter.py <extracted_texts_directory> [output_csv]
+```
+
+**Example:**
+```bash
+python csv_exporter.py extracted_texts/ receipts.csv
+```
+
+**Class: `CSVExporter`**
+- `export_to_csv(data, include_image_filename)`: Export data to CSV
+- `sort_data(data)`: Sort receipts by category and date
+- `export_from_texts_directory(texts_directory, text_processor_func)`: Export from text files
+
+**CSV Columns:**
+- `date`: Purchase date in YYYY-MM-DD format
+- `amount`: Payment amount with currency symbol (e.g., $45.20)
+- `category`: Purchase category (dining, entertainment, travel, utility, health)
+- `image_filename`: (optional) Original image filename
+
+---
+
+## Workflow
+
+### Typical Usage Flow
+
+1. **Extract text from images:**
+   ```bash
+   python image_extractor.py images/ extracted_texts/
+   ```
+
+2. **Process extracted text:**
+   ```bash
+   python text_processor.py extracted_texts/
+   ```
+
+3. **Export to CSV:**
+   ```bash
+   python csv_exporter.py extracted_texts/ receipts.csv
+   ```
+
+### Or Use the Batch Processor (Recommended)
+
+```bash
+python batch_receipt_processor.py images/ --output-csv receipts.csv
+```
+
+This single command performs all three steps automatically.
+
+---
 
 ## Requirements
 
-- Python 3.11+
-- CUDA-compatible GPU (required for model inference)
-- PyTorch with CUDA support
+See `requirements.txt` for full dependency list. Key requirements:
 
-## Installation
+- **PyTorch** (with CUDA support recommended)
+- **transformers** (Hugging Face)
+- **Pillow** (image processing)
+- **pdf2image** (for PDF processing)
+- **poppler-utils** (system package required for pdf2image)
 
-1. **Install PyTorch with CUDA support** (adjust CUDA version as needed for your system, my local machine is on CUDA 12.1):
-   ```bash
-   pip install torch==2.5.1 torchvision==0.20.1 torchaudio==2.5.1 --index-url https://download.pytorch.org/whl/cu121
-   ```
+### Installation Notes
 
-2. **Install project dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
+1. Install PyTorch with CUDA support first (check compatibility at https://pytorch.org)
+2. Install system dependencies:
+   - Ubuntu/Debian: `sudo apt-get install poppler-utils`
+   - macOS: `brew install poppler`
+3. Install Python packages: `pip install -r requirements.txt`
 
-## Usage
+---
 
-1. Place your image file in the project directory (or update the `image_path` variable in `model.py`)
+## Directory Structure
 
-2. Run the model:
-   ```bash
-   python model.py
-   ```
+```
+.
+├── batch_receipt_processor.py  # Main orchestrator
+├── image_extractor.py         # Image text extraction
+├── pdf_extractor.py           # PDF text extraction
+├── text_processor.py          # Text processing & categorization
+├── csv_exporter.py            # CSV export
+├── images/                    # Input receipt images
+├── extracted_texts/           # Extracted text files
+├── receipts.csv               # Output CSV file
+└── requirements.txt           # Python dependencies
+```
 
-3. The extracted text will be saved to `example.txt` and printed to the console.
-
-## Customization
-
-- **Change the image**: Update the `image_path` variable on line 26 of `model.py`
-- **General Use-Case**: Change the prompt on line 40 to "Describe the image in detail" for general image description
-- **Adjust image resolution**: Modify `max_resolution` on line 30 to change the maximum image size (for managing VRAM usage)
-
-## Google Vision Utility
-
-The `google_vision_util/` directory contains a small utility script for extracting text from Google Vision API JSON responses. This can be useful if you're working with Google Cloud Vision API outputs and need to parse the JSON format. See `google_vision_util/extract_text.py` for usage details.
+---
 
 ## Notes
 
-- **GPU Recommendated**: This project defaults to using GPU for inference but falls back to CPU if no GPU is available.
-- **VRAM Usage**: The default image resolution is limited to 1728px to reduce VRAM usage. If you have more VRAM available, you can increase or remove this limit.
-- **Model Size**: The Qwen3-VL-2B-Instruct model is relatively lightweight (~2B parameters) but still requires significant GPU memory.
+- The system uses the **Qwen3-VL-2B-Instruct** model for both image and text processing
+- GPU acceleration is recommended for faster processing
+- Large images are automatically resized to optimize processing speed
+- The batch processor manages GPU memory by cleaning up models between steps
+- All scripts can be used standalone or as part of the integrated pipeline
 
-## License
-
-See LICENSE file for details.
